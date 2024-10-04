@@ -27,17 +27,17 @@ const router = createRouter({
   routes,
 });
 
-// // Navigation guard
-// router.beforeEach((to, from, next) => {
-//   const isAuthenticated = store.state.isAuthenticated; // Check if user is authenticated
+// Navigation guard
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem("token"); // Check if user is authenticated
 
-//   // If the route requires authentication and the user is not authenticated
-//   if (to.meta.requiresAuth && !isAuthenticated) {
-//     next('/login'); // Redirect to login page
-//   } else {
-//     next(); // Proceed to the route
-//   }
-// });
+  // If the route requires authentication and the user is not authenticated
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next("/login"); // Redirect to login page
+  } else {
+    next(); // Proceed to the route
+  }
+});
 // router.beforeEach((to, from, next) => {
 //   const isAuthenticated = localStorage.getItem("authToken"); // Assume token is saved here after login
 

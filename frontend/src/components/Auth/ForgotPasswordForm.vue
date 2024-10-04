@@ -1,33 +1,90 @@
 <template>
-  <div>
-    <h2>Forgot Password</h2>
+  <div class="forgot-password-form">
+    <!-- <h2>Forgot Password</h2> -->
     <form @submit.prevent="resetPassword">
-      <input v-model="email" type="email" placeholder="Enter your email" required />
+      <div class="input-group">
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Enter your email"
+          required
+        />
+      </div>
       <button type="submit">Send Reset Link</button>
     </form>
-    <p v-if="message">{{ message }}</p>
+    <p v-if="message" class="message">{{ message }}</p>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
-      email: '',
-      message: '',
+      email: "",
+      message: "",
     };
   },
   methods: {
     async resetPassword() {
       try {
-        const response = await axios.post('http://localhost:5000/api/auth/forgot-password', { email: this.email });
+        const response = await axios.post(
+          "http://localhost:5000/api/auth/forgot-password",
+          { email: this.email }
+        );
         this.message = response.data.message;
       } catch (error) {
-        this.message = 'Error sending reset link. Please try again.';
+        this.message = "Error sending reset link. Please try again.";
       }
     },
   },
 };
 </script>
+
+<style scoped>
+.forgot-password-form {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+}
+
+.forgot-password-form h2 {
+  text-align: center;
+  color: #cf5a7b; /* Primary color */
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input-group input:focus {
+  border-color: #cf5a7b; /* Change border color on focus */
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #cf5a7b; /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #cf5a7b; /* Darker shade on hover */
+}
+
+.message {
+  text-align: center;
+  margin-top: 10px;
+}
+</style>
