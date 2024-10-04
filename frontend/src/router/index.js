@@ -5,11 +5,14 @@ import Signup from "../views/Auth/AuthSignup.vue";
 import ForgotPassword from "../views/Auth/ForgotPassword.vue";
 import Dashboard from "../views/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
+import ResetPassword from "../views/Auth/ResetPassword.vue";
 
 const routes = [
   { path: "/login", component: Login },
   { path: "/signup", component: Signup },
   { path: "/forgot-password", component: ForgotPassword },
+  { path: "/reset-password", component: ResetPassword },
+
   // { path: '/dashboard', component: Dashboard },
   {
     path: "/",

@@ -1,37 +1,33 @@
 <template>
+  <div>
+    <h2>Forgot Password</h2>
     <form @submit.prevent="resetPassword">
-      <div>
-        <label>Email</label>
-        <input v-model="email" type="email" required />
-      </div>
-      <button type="submit">Reset Password</button>
+      <input v-model="email" type="email" placeholder="Enter your email" required />
+      <button type="submit">Send Reset Link</button>
     </form>
-  </template>
-  
-  <script>
-  import AuthService from '../../services/AuthService';
-  
-  export default {
-    data() {
-      return {
-        email: ''
-      };
-    },
-    methods: {
-      async resetPassword() {
-        try {
-          const response = await AuthService.resetPassword(this.email);
-          console.log(response);
-          alert('Password reset link sent to your email.');
-        } catch (error) {
-          console.error('Error sending reset link:', error);
-        }
+    <p v-if="message">{{ message }}</p>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      email: '',
+      message: '',
+    };
+  },
+  methods: {
+    async resetPassword() {
+      try {
+        const response = await axios.post('http://localhost:5000/api/auth/forgot-password', { email: this.email });
+        this.message = response.data.message;
+      } catch (error) {
+        this.message = 'Error sending reset link. Please try again.';
       }
-    }
-  };
-  </script>
-  
-  <style>
-  /* Styles for the forgot password form */
-  </style>
-  
+    },
+  },
+};
+</script>
