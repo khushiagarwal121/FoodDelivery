@@ -72,6 +72,17 @@ export default {
           this.user
         );
         this.message = response.data.message;
+
+        // Show success message on the signup page
+        // upon clciking button on alert message screen changed
+        alert(
+          "User registered successfully. You will be redirected to the login page."
+        );
+
+        // Wait 2 seconds before redirecting to login page
+        // setTimeout(() => {
+        this.$router.push("/login");
+        // }, 2000); // 2000ms = 2 seconds
       } catch (error) {
         this.message =
           error.response.data.message || "An error occurred during signup.";

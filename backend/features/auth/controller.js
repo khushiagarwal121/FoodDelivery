@@ -20,7 +20,9 @@ exports.login = async (req, res, pool) => {
 exports.signup = async (req, res, pool) => {
   try {
     await signupUser(pool, req.body);
-    res.status(201).json({ message: "User created successfully" });
+    res
+      .status(201)
+      .json({ message: "User created successfully. Please log in." });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(409).json({ message: error.message });

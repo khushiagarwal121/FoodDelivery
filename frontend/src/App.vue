@@ -6,7 +6,7 @@
 
 <script>
 // import Header from "./components/Layout/Header.vue";
-// import Footer from "./components/Layout/Footer.vue";
+// import Foot  ` q`1`  er from "./components/Layout/Footer.vue";
 // import HelloWorld from './components/HelloWorld.vue'
 
 export default {
