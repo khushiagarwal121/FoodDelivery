@@ -13,7 +13,6 @@
       <!-- Show loading spinner while sending the reset link -->
       <div v-if="loading" class="loading-spinner">
         <span>Sending...</span>
-        <!-- You can replace this with an actual spinner icon -->
       </div>
     </form>
     <p v-if="message" class="message">{{ message }}</p>
