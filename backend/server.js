@@ -1,3 +1,4 @@
+require("dotenv").config(); // Load environment variables
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg"); // Import PostgreSQL client
@@ -17,13 +18,13 @@ app.use(
 // app.use(cors());
 app.use(express.json());
 
-// PostgreSQL connection
+// PostgreSQL connection using environment variables
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "postgres",
-  password: "root",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT || 5432,
 });
 
 // Test PostgreSQL connection
