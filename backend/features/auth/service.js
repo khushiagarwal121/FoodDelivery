@@ -10,8 +10,8 @@ const {
 } = require("./repository");
 require("dotenv").config();
 
-exports.loginUser = async (pool, email, password) => {
-  const user = await findUserByEmail(pool, email);
+exports.loginUser = async (email, password) => {
+  const user = await findUserByEmail(email); // No need to pass pool
 
   if (!user) {
     throw new Error("Invalid email or password");
@@ -34,9 +34,8 @@ exports.loginUser = async (pool, email, password) => {
   return token;
 };
 
-exports.signupUser = async (pool, userData) => {
+exports.signupUser = async (userData) => {
   const existingUser = await findUserByEmailOrPhone(
-    pool,
     userData.email,
     userData.phone_number
   );
@@ -47,11 +46,11 @@ exports.signupUser = async (pool, userData) => {
 
   const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-  await createUser(pool, { ...userData, hashedPassword });
+  await createUser({ ...userData, hashedPassword }); // No need to pass pool
 };
 
-exports.sendResetPasswordLink = async (pool, email) => {
-  const user = await findUserByEmail(pool, email);
+exports.sendResetPasswordLink = async (email) => {
+  const user = await findUserByEmail(email); // No need to pass pool
 
   if (!user) {
     throw new Error("User not found with that email");
@@ -83,15 +82,15 @@ exports.sendResetPasswordLink = async (pool, email) => {
   return token;
 };
 
-exports.resetUserPassword = async (pool, token, newPassword) => {
+exports.resetUserPassword = async (token, newPassword) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  const user = await findUserByUUID(pool, decoded.uuid);
+  const user = await findUserByUUID(decoded.uuid); // No need to pass pool
 
   if (!user) {
     throw new Error("User not found");
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await updateUserPassword(pool, user.uuid, hashedPassword);
+  await updateUserPassword(user.uuid, hashedPassword); // No need to pass pool
 };

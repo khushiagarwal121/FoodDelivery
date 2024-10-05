@@ -1,18 +1,23 @@
-exports.findUserByEmail = async (pool, email) => {
-  const result = await pool.query("SELECT * FROM users WHERE email = $1", [
-    email,
-  ]);
-  return result.rows[0];
+const User = require("../../models/User"); // Import the Sequelize model
+const { Sequelize } = require("sequelize");
+
+exports.findUserByEmail = async (email) => {
+  if (!email) {
+    throw new Error("Email cannot be empty");
+  }
+
+  return await User.findOne({ where: { email } });
 };
 
-exports.findUserByUUID = async (pool, uuid) => {
-  const result = await pool.query("SELECT * FROM users WHERE uuid = $1", [
-    uuid,
-  ]);
-  return result.rows[0];
+exports.findUserByUUID = async (uuid) => {
+  if (!uuid) {
+    throw new Error("UUID cannot be empty");
+  }
+
+  return await User.findOne({ where: { uuid } });
 };
 
-exports.createUser = async (pool, userData) => {
+exports.createUser = async (userData) => {
   const {
     first_name,
     last_name,
@@ -22,32 +27,46 @@ exports.createUser = async (pool, userData) => {
     phone_number,
     dob,
   } = userData;
-  await pool.query(
-    `INSERT INTO users (uuid, first_name, last_name, email, password, country_code, phone_number, dob)
-      VALUES (uuid_generate_v4(), $1, $2, $3, $4, $5, $6, $7)`,
-    [
-      first_name,
-      last_name,
-      email,
-      hashedPassword,
-      country_code,
-      phone_number,
-      dob,
-    ]
-  );
+
+  // Validate that required fields are provided
+  if (!first_name || !last_name || !email || !hashedPassword || !phone_number) {
+    throw new Error("Missing required user data");
+  }
+
+  return await User.create({
+    first_name,
+    last_name,
+    email,
+    password: hashedPassword, // Use hashed password
+    country_code,
+    phone_number,
+    dob,
+  });
 };
 
-exports.updateUserPassword = async (pool, uuid, hashedPassword) => {
-  await pool.query("UPDATE users SET password = $1 WHERE uuid = $2", [
-    hashedPassword,
-    uuid,
-  ]);
+exports.updateUserPassword = async (uuid, hashedPassword) => {
+  if (!uuid || !hashedPassword) {
+    throw new Error("UUID and hashedPassword cannot be empty");
+  }
+
+  return await User.update({ password: hashedPassword }, { where: { uuid } });
 };
 
-exports.findUserByEmailOrPhone = async (pool, email, phone_number) => {
-  const result = await pool.query(
-    "SELECT * FROM users WHERE email = $1 OR phone_number = $2",
-    [email, phone_number]
-  );
-  return result.rows[0];
+exports.findUserByEmailOrPhone = async (email, phone_number) => {
+  // Ensure that at least one value (email or phone_number) is provided
+  if (!email && !phone_number) {
+    throw new Error("Either email or phone_number must be provided");
+  }
+
+  console.log("email:", email);
+  console.log("phone_number:", phone_number);
+
+  return await User.findOne({
+    where: {
+      [Sequelize.Op.or]: [
+        email ? { email } : {}, // Only include email condition if provided
+        phone_number ? { phone_number } : {}, // Only include phone_number condition if provided
+      ],
+    },
+  });
 };

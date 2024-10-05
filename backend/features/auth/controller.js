@@ -5,11 +5,11 @@ const {
   resetUserPassword,
 } = require("./service");
 
-exports.login = async (req, res, pool) => {
+exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const token = await loginUser(pool, email, password);
+    const token = await loginUser(email, password); // Removed pool
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     console.error("Login error:", error);
@@ -17,9 +17,9 @@ exports.login = async (req, res, pool) => {
   }
 };
 
-exports.signup = async (req, res, pool) => {
+exports.signup = async (req, res) => {
   try {
-    await signupUser(pool, req.body);
+    await signupUser(req.body); // Removed pool
     res
       .status(201)
       .json({ message: "User created successfully. Please log in." });
@@ -29,11 +29,11 @@ exports.signup = async (req, res, pool) => {
   }
 };
 
-exports.forgotPassword = async (req, res, pool) => {
+exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
   try {
-    await sendResetPasswordLink(pool, email);
+    await sendResetPasswordLink(email); // Removed pool
     res.status(200).json({ message: "Password reset link sent to email" });
   } catch (error) {
     console.error("Forgot password error:", error);
@@ -41,11 +41,11 @@ exports.forgotPassword = async (req, res, pool) => {
   }
 };
 
-exports.resetPassword = async (req, res, pool) => {
+exports.resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
-    await resetUserPassword(pool, token, newPassword);
+    await resetUserPassword(token, newPassword); // Removed pool
     res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     console.error("Reset password error:", error);
