@@ -1,6 +1,5 @@
 <template>
   <div class="forgot-password-form">
-    <!-- <h2>Forgot Password</h2> -->
     <form @submit.prevent="resetPassword">
       <div class="input-group">
         <input
@@ -10,7 +9,12 @@
           required
         />
       </div>
-      <button type="submit">Send Reset Link</button>
+      <button type="submit" :disabled="loading">Send Reset Link</button>
+      <!-- Show loading spinner while sending the reset link -->
+      <div v-if="loading" class="loading-spinner">
+        <span>Sending...</span>
+        <!-- You can replace this with an actual spinner icon -->
+      </div>
     </form>
     <p v-if="message" class="message">{{ message }}</p>
   </div>
@@ -24,10 +28,13 @@ export default {
     return {
       email: "",
       message: "",
+      loading: false, // Add loading state
     };
   },
   methods: {
     async resetPassword() {
+      this.loading = true; // Start loading
+      this.message = ""; // Clear previous messages
       try {
         const response = await axios.post(
           "http://localhost:5000/api/auth/forgot-password",
@@ -36,6 +43,8 @@ export default {
         this.message = response.data.message;
       } catch (error) {
         this.message = "Error sending reset link. Please try again.";
+      } finally {
+        this.loading = false; // Stop loading
       }
     },
   },
@@ -79,8 +88,18 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button:disabled {
+  background-color: #ccc; /* Disable button style */
+  cursor: not-allowed; /* Change cursor for disabled button */
+}
+
+button:hover:enabled {
   background-color: #cf5a7b; /* Darker shade on hover */
+}
+
+.loading-spinner {
+  text-align: center;
+  margin-top: 10px;
 }
 
 .message {
