@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import AuthService from "../../services/AuthService";
 import { useRoute } from "vue-router";
 
 export default {
@@ -44,34 +45,13 @@ export default {
         alert("Passwords do not match");
         return;
       }
-
+      const resetToken = this.route.query.token;
       try {
-        const resetToken = this.route.query.token; // Assumes token is passed as query parameter
-        const response = await fetch(
-          "http://localhost:5000/api/auth/reset-password/",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token: resetToken, // Use the reset token from the query parameter
-              newPassword: this.newPassword, // Use the new password from the data model
-            }),
-          }
-        );
-
-        const data = await response.json();
-        if (response.ok) {
-          alert("Password reset successfully");
-          console.log(data);
-        } else {
-          alert(data.message || "Error resetting password"); // Handle error messages
-          console.error(data);
-        }
+        await AuthService.confirmResetPassword(resetToken, this.newPassword);
+        alert("Password reset successfully");
+        this.$router.push("/login");
       } catch (error) {
         alert("Error resetting password");
-        console.error(error);
       }
     },
   },

@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import AuthService from '@/services/AuthService';
 
 export default {
   data() {
@@ -67,10 +67,7 @@ export default {
   methods: {
     async handleSignup() {
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/signup",
-          this.user
-        );
+        const response = await AuthService.signup(this.user);
         this.message = response.data.message;
 
         // Show success message on the signup page

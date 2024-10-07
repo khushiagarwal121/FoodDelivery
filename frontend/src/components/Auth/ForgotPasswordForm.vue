@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import AuthService from "@/services/AuthService";
 
 export default {
   data() {
@@ -35,10 +35,7 @@ export default {
       this.loading = true; // Start loading
       this.message = ""; // Clear previous messages
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/forgot-password",
-          { email: this.email }
-        );
+        const response = await AuthService.resetPassword(this.email);
         this.message = response.data.message;
       } catch (error) {
         this.message = "Error sending reset link. Please try again.";

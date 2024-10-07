@@ -17,8 +17,7 @@
 </template>
 
 <script>
-import axios from "axios";
-
+import AuthService from "../../services/AuthService";
 export default {
   data() {
     return {
@@ -32,11 +31,11 @@ export default {
   methods: {
     async handleLogin() {
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/login",
-          this.user
+        const response = await AuthService.login(
+          this.user.email,
+          this.user.password
         );
-        localStorage.setItem("token", response.data.token); // Store token on successful login
+        localStorage.setItem("token", response.data.token);
         this.message = "Login successful! Redirecting...";
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
