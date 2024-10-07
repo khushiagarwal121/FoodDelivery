@@ -21,7 +21,7 @@ export default {
 <style scoped>
 .signup {
   max-width: 400px;
-  margin: auto;
+  margin: -30px auto 0; /* Negative top margin to move form upward */
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;

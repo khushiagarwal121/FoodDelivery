@@ -96,6 +96,7 @@ export default {
 .signup-form {
   max-width: 350px;
   margin: auto;
+
   padding: 10px;
   /* border: 1px solid #ccc;
   border-radius: 8px;
