@@ -74,7 +74,7 @@ exports.sendResetPasswordLink = async (email) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Password Reset",
-    text: `You requested a password reset. Please use the following link to reset your password: http://localhost:8080/reset-password?token=${token}`,
+    text: `You requested a password reset. Please use the following link to reset your password:${process.env.FRONTEND_URL}/reset-password?token=${token}`,
   };
 
   await transporter.sendMail(mailOptions);

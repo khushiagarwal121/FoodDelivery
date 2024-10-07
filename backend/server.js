@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: "http://localhost:8080", // Your frontend URL
+    origin: FRONTEND_URL, // Your frontend URL
     methods: ["GET", "POST"],
   })
 );

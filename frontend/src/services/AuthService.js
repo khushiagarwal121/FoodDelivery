@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "http://192.1.200.49:5000/api/auth";
 
 const AuthService = {
   login(email, password) {
