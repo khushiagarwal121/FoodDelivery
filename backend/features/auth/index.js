@@ -4,10 +4,10 @@ const {
   signup,
   forgotPassword,
   resetPassword,
-  logout, // Include this if you have logout functionality
+  logout,
 } = require("./controller");
 
-// Import from service (if needed)
+// Import from service
 const {
   loginUser,
   signupUser,
@@ -15,7 +15,7 @@ const {
   resetUserPassword,
 } = require("./service");
 
-// Import from repository (if needed)
+// Import from repository
 const {
   findUserByEmail,
   findUserByUUID,
@@ -24,22 +24,22 @@ const {
   findUserByEmailOrPhone,
 } = require("./repository");
 
-// Export them together for easier access
+// Exporting them together for easier access
 module.exports = {
-  // Expose controller methods
+  // controller methods
   login,
   signup,
   forgotPassword,
   resetPassword,
   logout,
 
-  // Expose service methods (only if other parts of the app need direct access)
+  //  service methods (if other parts of the app need direct access)
   loginUser,
   signupUser,
   sendResetPasswordLink,
   resetUserPassword,
 
-  // Expose repository methods (if needed in other places)
+  //  repository methods (if needed in other places)
   findUserByEmail,
   findUserByUUID,
   createUser,
