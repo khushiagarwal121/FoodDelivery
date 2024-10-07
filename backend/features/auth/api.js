@@ -4,7 +4,7 @@ const {
   signup,
   forgotPassword,
   resetPassword,
-  logout, // Add this
+  logout,
 } = require("./controller");
 
 const router = express.Router();
@@ -14,7 +14,7 @@ module.exports = (pool) => {
   router.post("/signup", (req, res) => signup(req, res, pool));
   router.post("/forgot-password", (req, res) => forgotPassword(req, res, pool));
   router.post("/reset-password", (req, res) => resetPassword(req, res, pool));
-  router.post("/logout", (req, res) => logout(req, res)); // Add logout route
+  router.post("/logout", (req, res) => logout(req, res)); 
 
   return router;
 };
