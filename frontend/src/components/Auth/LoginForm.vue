@@ -4,13 +4,33 @@
     <form @submit.prevent="handleLogin">
       <div class="input-group">
         <label for="email">Email:</label>
-        <input v-model="user.email" type="email" id="email" required />
+        <input
+          v-model="user.email"
+          type="email"
+          id="email"
+          @blur="validateEmail"
+          :class="{ 'input-error': errors.email }"
+          required
+        />
+        <span v-if="errors.email" class="error-message">{{
+          errors.email
+        }}</span>
       </div>
       <div class="input-group">
         <label for="password">Password:</label>
-        <input v-model="user.password" type="password" id="password" required />
+        <input
+          v-model="user.password"
+          type="password"
+          id="password"
+          @blur="validatePassword"
+          :class="errors.password"
+          required
+        />
+        <span v-if="errors.password" class="error-message">{{
+          errors.password
+        }}</span>
       </div>
-      <button type="submit">Login</button>
+      <button type="submit" :disabled="!isFormValid">Login</button>
     </form>
     <div v-if="message" class="message">{{ message }}</div>
   </div>
@@ -26,7 +46,21 @@ export default {
         password: "",
       },
       message: "",
+      errors: {
+        email: null,
+        password: null,
+      },
     };
+  },
+  computed: {
+    isFormValid() {
+      return (
+        this.user.email &&
+        this.user.password &&
+        !this.errors.email &&
+        !this.errors.password
+      );
+    },
   },
   methods: {
     async handleLogin() {
@@ -41,6 +75,20 @@ export default {
       } catch (error) {
         this.message =
           error.response.data.message || "Login failed. Please try again.";
+      }
+    },
+    validateEmail() {
+      if (!this.user.email) {
+        this.errors.email = "Email is required";
+      } else {
+        this.errors.email = null;
+      }
+    },
+    validatePassword() {
+      if (!this.user.password) {
+        this.errors.password = "Password is required";
+      } else {
+        this.errors.password = null;
       }
     },
   },
@@ -100,5 +148,20 @@ button:hover {
 .message {
   text-align: center;
   margin-top: 10px;
+}
+
+.input-error {
+  border-color: red;
+  color: red;
+}
+span {
+  color: red;
+  font-size: 11px;
+}
+/* Style for disabled button */
+button:disabled {
+  background-color: #e9a4b5; /* Lighter color when disabled */
+  cursor: not-allowed; /* Change cursor to not-allowed */
+  opacity: 0.7; /* Reduce opacity to make it look disabled */
 }
 </style>
