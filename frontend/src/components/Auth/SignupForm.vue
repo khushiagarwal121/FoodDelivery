@@ -1,53 +1,118 @@
 <template>
   <div class="signup-form">
-    <!-- <h2>Sign Up</h2> -->
     <form @submit.prevent="handleSignup">
       <div class="input-group">
         <label for="first_name">First Name:</label>
-        <input v-model="user.first_name" type="text" id="first_name" required />
+        <input
+          v-model="user.first_name"
+          type="text"
+          id="first_name"
+          @blur="validateFirstName"
+          :class="{ 'input-error': errors.first_name }"
+          required
+        />
+        <span v-if="errors.first_name" class="error-message">{{
+          errors.first_name
+        }}</span>
       </div>
+
       <div class="input-group">
         <label for="last_name">Last Name:</label>
-        <input v-model="user.last_name" type="text" id="last_name" required />
+        <input
+          v-model="user.last_name"
+          type="text"
+          id="last_name"
+          @blur="validateLastName"
+          :class="{ 'input-error': errors.last_name }"
+          required
+        />
+        <span v-if="errors.last_name" class="error-message">{{
+          errors.last_name
+        }}</span>
       </div>
+
       <div class="input-group">
         <label for="email">Email:</label>
-        <input v-model="user.email" type="email" id="email" required />
+        <input
+          v-model="user.email"
+          type="email"
+          id="email"
+          @blur="validateEmail"
+          :class="{ 'input-error': errors.email }"
+          required
+        />
+        <span v-if="errors.email" class="error-message">{{
+          errors.email
+        }}</span>
       </div>
+
       <div class="input-group">
         <label for="password">Password:</label>
-        <input v-model="user.password" type="password" id="password" required />
+        <input
+          v-model="user.password"
+          type="password"
+          id="password"
+          @blur="validatePassword"
+          :class="{ 'input-error': errors.password }"
+          required
+        />
+        <span v-if="errors.password" class="error-message">{{
+          errors.password
+        }}</span>
       </div>
+
       <div class="input-group">
         <label for="country_code">Country Code:</label>
         <input
           v-model="user.country_code"
           type="text"
           id="country_code"
+          @blur="validateCountryCode"
+          :class="{ 'input-error': errors.country_code }"
           required
         />
+        <span v-if="errors.country_code" class="error-message">{{
+          errors.country_code
+        }}</span>
       </div>
+
       <div class="input-group">
         <label for="phone_number">Phone Number:</label>
         <input
           v-model="user.phone_number"
           type="tel"
           id="phone_number"
+          @blur="validatePhoneNumber"
+          :class="{ 'input-error': errors.phone_number }"
           required
         />
+        <span v-if="errors.phone_number" class="error-message">{{
+          errors.phone_number
+        }}</span>
       </div>
+
       <div class="input-group">
         <label for="dob">Date of Birth:</label>
-        <input v-model="user.dob" type="date" id="dob" required />
+        <input
+          v-model="user.dob"
+          type="date"
+          id="dob"
+          @blur="validateDOB"
+          :class="{ 'input-error': errors.dob }"
+          required
+        />
+        <span v-if="errors.dob" class="error-message">{{ errors.dob }}</span>
       </div>
-      <button type="submit">Submit</button>
+
+      <button :disabled="isFormInvalid" type="submit">Submit</button>
     </form>
+
     <div v-if="message" class="message">{{ message }}</div>
   </div>
 </template>
 
 <script>
-import AuthService from '@/services/AuthService';
+import AuthService from "@/services/AuthService";
 
 export default {
   data() {
@@ -62,27 +127,97 @@ export default {
         dob: "",
       },
       message: "",
+      errors: {
+        first_name: null,
+        last_name: null,
+        email: null,
+        password: null,
+        country_code: null,
+        phone_number: null,
+        dob: null,
+      },
     };
+  },
+  computed: {
+    isFormInvalid() {
+      return (
+        Object.values(this.errors).some((error) => error !== null) ||
+        Object.values(this.user).some((value) => !value)
+      );
+    },
   },
   methods: {
     async handleSignup() {
+      if (this.isFormInvalid) {
+        this.message = "Please correct the form errors before submitting.";
+        return;
+      }
+
       try {
         const response = await AuthService.signup(this.user);
         this.message = response.data.message;
 
-        // Show success message on the signup page
-        // upon clciking button on alert message screen changed
         alert(
           "User registered successfully. You will be redirected to the login page."
         );
-
-        // Wait 2 seconds before redirecting to login page
-        // setTimeout(() => {
         this.$router.push("/login");
-        // }, 2000); // 2000ms = 2 seconds
       } catch (error) {
         this.message =
           error.response.data.message || "An error occurred during signup.";
+      }
+    },
+    validateFirstName() {
+      if (!this.user.first_name) {
+        this.errors.first_name = "First name is required.";
+      } else {
+        this.errors.first_name = null;
+      }
+    },
+    validateLastName() {
+      if (!this.user.last_name) {
+        this.errors.last_name = "Last name is required.";
+      } else {
+        this.errors.last_name = null;
+      }
+    },
+    validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.user.email) {
+        this.errors.email = "Email is required.";
+      } else if (!emailPattern.test(this.user.email)) {
+        this.errors.email = "Invalid email format.";
+      } else {
+        this.errors.email = null;
+      }
+    },
+    validatePassword() {
+      if (!this.user.password) {
+        this.errors.password = "Password is required.";
+      } else if (this.user.password.length < 6) {
+        this.errors.password = "Password must be at least 6 characters.";
+      } else {
+        this.errors.password = null;
+      }
+    },
+    validateCountryCode() {
+      if (!this.user.country_code) {
+        this.errors.country_code = "Country code is required.";
+      } else {
+        this.errors.country_code = null;
+      }
+    },
+    validatePhoneNumber() {
+      if (!this.user.phone_number) {
+        this.errors.phone_number = "Phone number is required.";
+      } else {
+        this.errors.phone_number = null;
+      }
+    },
+    validateDOB() {
+      if (!this.user.dob) {
+        this.errors.dob = "Date of birth is required.";
+      } else {
+        this.errors.dob = null;
       }
     },
   },
@@ -93,17 +228,12 @@ export default {
 .signup-form {
   max-width: 350px;
   margin: auto;
-
   padding: 10px;
-  /* border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9; 
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 }
 
 .signup-form h2 {
   text-align: center;
-  color: #cf5a7b; /* Primary color */
+  color: #cf5a7b;
 }
 
 .input-group {
@@ -123,25 +253,55 @@ export default {
 }
 
 .input-group input:focus {
-  border-color: #cf5a7b; /* Change border color on focus */
+  border-color: #cf5a7b;
 }
 
 button {
   width: 100%;
   padding: 10px;
-  background-color: #cf5a7b; /* Primary button color */
+  background-color: #cf5a7b;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #cf5a7b; /* Darker shade on hover */
+button:disabled {
+  background-color: #e9a4b5;
+  cursor: not-allowed;
 }
 
-.message {
-  text-align: center;
-  margin-top: 10px;
+button:hover {
+  background-color: #cf5a7b;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column; /* Stack label, input, and error vertically */
+}
+
+.input-group input {
+  width: 100%; /* Take up the full width */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block; /* Ensures the error message is on a new line */
+}
+
+.input-error {
+  border-color: red; /* Highlight input with error */
 }
 </style>

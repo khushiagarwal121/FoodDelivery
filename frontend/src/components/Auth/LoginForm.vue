@@ -1,6 +1,5 @@
 <template>
   <div class="login-form">
-    <!-- <h2>Login</h2> -->
     <form @submit.prevent="handleLogin">
       <div class="input-group">
         <label for="email">Email:</label>
@@ -12,9 +11,9 @@
           :class="{ 'input-error': errors.email }"
           required
         />
-        <span v-if="errors.email" class="error-message">{{
-          errors.email
-        }}</span>
+        <span v-if="errors.email" class="error-message"
+          ><i>{{ errors.email }}</i></span
+        >
       </div>
       <div class="input-group">
         <label for="password">Password:</label>
@@ -23,12 +22,12 @@
           type="password"
           id="password"
           @blur="validatePassword"
-          :class="errors.password"
+          :class="{ 'input-error': errors.password }"
           required
         />
-        <span v-if="errors.password" class="error-message">{{
-          errors.password
-        }}</span>
+        <span v-if="errors.password" class="error-message"
+          ><i>{{ errors.password }}</i></span
+        >
       </div>
       <button type="submit" :disabled="!isFormValid">Login</button>
     </form>
@@ -65,11 +64,11 @@ export default {
   methods: {
     async handleLogin() {
       try {
-        const response = await AuthService.login(
-          this.user.email,
-          this.user.password
-        );
-        localStorage.setItem("token", response.data.token);
+        // Directly call the login method without assigning the response to a variable
+
+        await AuthService.login(this.user.email, this.user.password);
+
+        // If login is successful, proceed with redirection
         this.message = "Login successful! Redirecting...";
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
@@ -79,14 +78,14 @@ export default {
     },
     validateEmail() {
       if (!this.user.email) {
-        this.errors.email = "Email is required";
+        this.errors.email = "Email is required!";
       } else {
         this.errors.email = null;
       }
     },
     validatePassword() {
       if (!this.user.password) {
-        this.errors.password = "Password is required";
+        this.errors.password = "Password is required!";
       } else {
         this.errors.password = null;
       }
@@ -100,15 +99,6 @@ export default {
   max-width: 400px;
   margin: auto;
   padding: 20px;
-  /* border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9; 
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
-}
-
-.login-form h2 {
-  text-align: center;
-  color: #cf5a7b; /* Primary color */
 }
 
 .input-group {
@@ -128,13 +118,13 @@ export default {
 }
 
 .input-group input:focus {
-  border-color: #cf5a7b; /* Change border color on focus */
+  border-color: #cf5a7b;
 }
 
 button {
   width: 100%;
   padding: 10px;
-  background-color: #cf5a7b; /* Primary button color */
+  background-color: #cf5a7b;
   color: white;
   border: none;
   border-radius: 4px;
@@ -142,7 +132,7 @@ button {
 }
 
 button:hover {
-  background-color: #cf5a7b; /* Darker shade on hover */
+  background-color: #cf5a7b;
 }
 
 .message {
@@ -154,14 +144,15 @@ button:hover {
   border-color: red;
   color: red;
 }
+
 span {
   color: red;
   font-size: 11px;
 }
-/* Style for disabled button */
+
 button:disabled {
-  background-color: #e9a4b5; /* Lighter color when disabled */
-  cursor: not-allowed; /* Change cursor to not-allowed */
-  opacity: 0.7; /* Reduce opacity to make it look disabled */
+  background-color: #e9a4b5;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 </style>

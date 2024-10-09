@@ -4,7 +4,11 @@ const API_URL = "http://localhost:5000/api/auth";
 
 const AuthService = {
   login(email, password) {
-    return axios.post(`${API_URL}/login`, { email, password });
+    return axios.post(
+      `${API_URL}/login`,
+      { email, password },
+      { withCredentials: true } // This ensures that cookies are sent and received
+    );
   },
   signup(userData) {
     return axios.post(`${API_URL}/signup`, userData);

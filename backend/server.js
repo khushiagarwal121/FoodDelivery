@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg"); // Import PostgreSQL client
 const authRoutes = require("./features/auth/api");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,9 +11,13 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: process.env.FRONTEND_URL, // Your frontend URL
+    credentials: true,
     methods: ["GET", "POST"],
   })
 );
+
+// Use cookie-parser middleware
+app.use(cookieParser());
 
 // Middleware
 // app.use(cors());

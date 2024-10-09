@@ -14,7 +14,7 @@ module.exports = (pool) => {
   router.post("/signup", (req, res) => signup(req, res, pool));
   router.post("/forgot-password", (req, res) => forgotPassword(req, res, pool));
   router.post("/reset-password", (req, res) => resetPassword(req, res, pool));
-  router.post("/logout", (req, res) => logout(req, res)); 
+  router.post("/logout", (req, res) => logout(req, res));
 
   return router;
 };

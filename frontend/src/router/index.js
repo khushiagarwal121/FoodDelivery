@@ -6,6 +6,7 @@ import ForgotPassword from "../views/Auth/ForgotPassword.vue";
 import Dashboard from "../views/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
 import ResetPassword from "../views/Auth/ResetPassword.vue";
+// import Cookies from "js-cookie";
 
 const routes = [
   { path: "/login", component: Login },
@@ -28,22 +29,27 @@ const router = createRouter({
 });
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem("token"); // Check if user is authenticated
+// router.beforeEach((to, from, next) => {
+//   const isAuthenticated = Cookies.get("authToken");
+//   const authTokenFromDocument = document.cookie; // Check all cookies set
 
-  if (
-    (to.path === "/login" || to.path === "/forgot-password") &&
-    isAuthenticated
-  ) {
-    next("/");
-  }
-  // If the route requires authentication and the user is not authenticated
-  else if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/login"); // Redirect to login page
-  } else {
-    next(); // Proceed to the route
-  }
-});
+//   // Log both to debug
+//   console.log("Using js-cookie:", Cookies.get("authToken"));
+//   console.log("Using document.cookie:", authTokenFromDocument);
+
+//   if (
+//     (to.path === "/login" || to.path === "/forgot-password") &&
+//     isAuthenticated
+//   ) {
+//     next("/");
+//   }
+//   // If the route requires authentication and the user is not authenticated
+//   else if (to.meta.requiresAuth && !isAuthenticated) {
+//     next("/login"); // Redirect to login page
+//   } else {
+//     next(); // Proceed to the route
+//   }
+// });
 // router.beforeEach((to, from, next) => {
 //   const isAuthenticated = localStorage.getItem("authToken"); // Assume token is saved here after login
 

@@ -9,8 +9,17 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const token = await loginUser(email, password); // Removed pool
-    res.status(200).json({ message: "Login successful", token });
+    const token = await loginUser(email, password); // Assuming this returns a valid token
+
+    // Set the token in a cookie for HTTP
+    res.cookie("authToken", token, {
+      httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+      secure: false, // Must be false for HTTP (only true for HTTPS)
+      sameSite: "None", // Helps protect against CSRF attacks
+      maxAge: 3600000, // Cookie expiration time (1 hour)
+    });
+
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.error("Login error:", error);
     res.status(401).json({ message: error.message });
@@ -55,6 +64,8 @@ exports.resetPassword = async (req, res) => {
 
 exports.logout = (req, res) => {
   try {
+    // Clear the authToken cookie on logout
+    res.clearCookie("authToken");
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.error("Logout error:", error);
