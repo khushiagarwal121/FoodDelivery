@@ -11,11 +11,20 @@ export default {
   name: "MainDashboard",
   // Your Vue component or JavaScript file
   methods: {
-    logout() {
-      localStorage.removeItem("token"); // Remove token from localStorage
-      // Redirect to login page or home page
-      this.$router.push("/login"); // Adjust according to your routing structure
+    async logout() {
+      try {
+        await AuthService.logout(); // Call the logout method from AuthService
+        this.$router.push("/login"); // Redirect to the login page
+      } catch (error) {
+        console.error("Logout failed:", error);
+        // Optionally, show an error message to the user
+      }
     },
+    // logout() {
+    // localStorage.removeItem("token"); // Remove token from localStorage
+    // // Redirect to login page or home page
+    // this.$router.push("/login"); // Adjust according to your routing structure
+    // },
   },
 };
 </script>

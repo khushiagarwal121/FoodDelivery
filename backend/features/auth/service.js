@@ -94,3 +94,12 @@ exports.resetUserPassword = async (token, newPassword) => {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   await updateUserPassword(user.uuid, hashedPassword); // No need to pass pool
 };
+
+exports.verifyToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return decoded;
+  } catch (error) {
+    throw new Error("Invalid token");
+  }
+};

@@ -6,6 +6,7 @@ import ForgotPassword from "../views/Auth/ForgotPassword.vue";
 import Dashboard from "../views/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
 import ResetPassword from "../views/Auth/ResetPassword.vue";
+import axios from "axios";
 // import Cookies from "js-cookie";
 
 const routes = [
@@ -64,5 +65,31 @@ const router = createRouter({
 //     next();
 //   }
 // });
+// Navigation guard
+router.beforeEach(async (to, from, next) => {
+  console.log(`Navigating to: ${to.path}`); // Log the target route
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    console.log("Checking authentication..."); // Log when checking auth
+
+    const response = await axios.get(
+      "http://localhost:5000/api/auth/check-auth",
+      {
+        withCredentials: true, // This ensures that cookies are sent with the request
+      }
+    );
+    console.log(response);
+    if (response.status === 200) {
+      console.log("User is authenticated."); // Log if authenticated
+      next();
+    } else {
+      console.log("User is not authenticated. Redirecting to Login."); // Log if not authenticated
+      next("/login");
+    }
+  } else {
+    console.log("No authentication required."); // Log for non-auth routes
+    next();
+  }
+});
 
 export default router;

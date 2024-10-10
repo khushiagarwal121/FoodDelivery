@@ -1,8 +1,10 @@
+const { verify } = require("jsonwebtoken");
 const {
   loginUser,
   signupUser,
   sendResetPasswordLink,
   resetUserPassword,
+  verifyToken,
 } = require("./service");
 
 exports.login = async (req, res) => {
@@ -10,14 +12,16 @@ exports.login = async (req, res) => {
 
   try {
     const token = await loginUser(email, password); // Assuming this returns a valid token
+    console.log("Generated token:", token);
 
     // Set the token in a cookie for HTTP
     res.cookie("authToken", token, {
       httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
       secure: false, // Must be false for HTTP (only true for HTTPS)
-      sameSite: "None", // Helps protect against CSRF attacks
+      sameSite: "strict", // Helps protect against CSRF attacks
       maxAge: 3600000, // Cookie expiration time (1 hour)
     });
+    console.log("Response headers before sending:", res.getHeaders());
 
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
@@ -61,14 +65,39 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 exports.logout = (req, res) => {
   try {
     // Clear the authToken cookie on logout
-    res.clearCookie("authToken");
+    res.clearCookie("authToken", {
+      httpOnly: true, // Make sure this matches the cookie options you used
+      secure: false, // Set to true if using HTTPS
+      sameSite: "None", // Ensure this matches your cookie settings
+    });
+
+    // Send a success response
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.error("Logout error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "An error occurred while logging out" });
+  }
+};
+
+exports.checkAuth = (req, res) => {
+  console.log("req.cookies", req.cookies);
+  // get token
+  const token = req.cookies["authToken"];
+
+  if (!token) {
+    return res.status(401).json({ message: "no token provided" });
+  }
+
+  try {
+    // calling service to verify token
+    const userData = verifyToken(token);
+    return res.status(200).json({ message: "Authenticated", user: userData });
+  } catch (err) {
+    return res
+      .status(401)
+      .json({ message: "Invalid token", error: error.message });
   }
 };
