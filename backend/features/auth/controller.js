@@ -96,8 +96,12 @@ exports.checkAuth = (req, res) => {
     const userData = verifyToken(token);
     return res.status(200).json({ message: "Authenticated", user: userData });
   } catch (err) {
-    return res
-      .status(401)
-      .json({ message: "Invalid token", error: error.message });
+    return (
+      res
+
+        .status(500)
+        // .json({ message: error.message }) // `error` is not defined
+        .json({ message: "Invalid token", error: error.message })
+    );
   }
 };

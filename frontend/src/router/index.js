@@ -67,28 +67,57 @@ const router = createRouter({
 // });
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
-  console.log(`Navigating to: ${to.path}`); // Log the target route
+  console.log(`Navigating to: ${to.path}`);
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    console.log("Checking authentication..."); // Log when checking auth
+  // For public routes like /login and /signup
+  if (
+    to.path === "/login" ||
+    to.path === "/signup" ||
+    to.path === "/forgot-password"
+  ) {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/auth/check-auth",
+        {
+          withCredentials: true, // This ensures cookies are sent with the request
+        }
+      );
 
-    const response = await axios.get(
-      "http://localhost:5000/api/auth/check-auth",
-      {
-        withCredentials: true, // This ensures that cookies are sent with the request
+      if (response.status === 200) {
+        console.log("User is already authenticated. Redirecting to dashboard.");
+        next("/"); // Redirect authenticated users to the dashboard
+      } else {
+        console.log("User is not authenticated. Proceeding to login/signup.");
+        next(); // Allow access to login, signup, or forgot-password if not authenticated
       }
-    );
-    console.log(response);
-    if (response.status === 200) {
-      console.log("User is authenticated."); // Log if authenticated
-      next();
-    } else {
-      console.log("User is not authenticated. Redirecting to Login."); // Log if not authenticated
-      next("/login");
+    } catch (error) {
+      console.error("Error during auth check:", error);
+      next(); // If error occurs, allow access to login/signup
+    }
+  }
+  // For routes that require authentication (e.g., dashboard)
+  else if (to.matched.some((record) => record.meta.requiresAuth)) {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/auth/check-auth",
+        {
+          withCredentials: true, // This ensures cookies are sent with the request
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("User is authenticated.");
+        next(); // Proceed if authenticated
+      } else {
+        console.log("User is not authenticated. Redirecting to login.");
+        next("/login"); // Redirect to login if not authenticated
+      }
+    } catch (error) {
+      console.error("Error checking authentication:", error);
+      next("/login"); // Redirect to login on error
     }
   } else {
-    console.log("No authentication required."); // Log for non-auth routes
-    next();
+    next(); // Proceed for routes that don't require authentication
   }
 });
 

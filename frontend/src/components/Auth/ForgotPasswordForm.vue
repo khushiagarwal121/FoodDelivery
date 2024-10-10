@@ -36,9 +36,18 @@ export default {
       this.message = ""; // Clear previous messages
       try {
         const response = await AuthService.resetPassword(this.email);
-        this.message = response.data.message;
+        this.message = response.message; // Show success message
       } catch (error) {
-        this.message = "Error sending reset link. Please try again.";
+        // console.log(error.response); // Log the error response for debugging
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          this.message = error.response.data.message; // Show backend error message
+        } else {
+          this.message = "Error sending reset link. Please try again."; // Fallback error message
+        }
       } finally {
         this.loading = false; // Stop loading
       }
