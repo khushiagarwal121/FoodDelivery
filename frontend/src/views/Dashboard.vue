@@ -7,6 +7,8 @@
 </template>
   
   <script>
+import AuthService from "../services/AuthService";
+
 export default {
   name: "MainDashboard",
   // Your Vue component or JavaScript file

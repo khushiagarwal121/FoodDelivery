@@ -65,22 +65,22 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-exports.logout = (req, res) => {
-  try {
-    // Clear the authToken cookie on logout
-    res.clearCookie("authToken", {
-      httpOnly: true, // Make sure this matches the cookie options you used
-      secure: false, // Set to true if using HTTPS
-      sameSite: "None", // Ensure this matches your cookie settings
-    });
+// exports.logout = (req, res) => {
+//   try {
+//     // Clear the authToken cookie on logout
+//     res.clearCookie("authToken", {
+//       httpOnly: true, // Make sure this matches the cookie options you used
+//       secure: false, // Set to true if using HTTPS
+//       sameSite: "None", // Ensure this matches your cookie settings
+//     });
 
-    // Send a success response
-    res.status(200).json({ message: "Logout successful" });
-  } catch (error) {
-    console.error("Logout error:", error);
-    res.status(500).json({ message: "An error occurred while logging out" });
-  }
-};
+//     // Send a success response
+//     res.status(200).json({ message: "Logout successful" });
+//   } catch (error) {
+//     console.error("Logout error:", error);
+//     res.status(500).json({ message: "An error occurred while logging out" });
+//   }
+// };
 
 exports.checkAuth = (req, res) => {
   console.log("req.cookies", req.cookies);

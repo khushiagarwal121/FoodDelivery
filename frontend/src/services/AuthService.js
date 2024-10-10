@@ -51,9 +51,13 @@ const AuthService = {
       return response.data; // Return response data for further processing if needed
     } catch (error) {
       throw new Error(
-        error.response?.data?.message || "Confirm reset password failed"
+        error``.response?.data?.message || "Confirm reset password failed"
       );
     }
+  },
+
+  async logout() {
+    return axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
   },
 };
 
