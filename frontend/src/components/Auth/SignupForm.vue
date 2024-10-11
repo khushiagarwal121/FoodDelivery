@@ -155,15 +155,34 @@ export default {
 
       try {
         const response = await AuthService.signup(this.user);
-        this.message = response.data.message;
+        console.log("response:", response);
+
+        // Assuming the backend sends a success message in response.data.message
+        this.message = response.message;
 
         alert(
           "User registered successfully. You will be redirected to the login page."
         );
         this.$router.push("/login");
       } catch (error) {
-        this.message =
-          error.response.data.message || "An error occurred during signup.";
+        // Enhanced error handling: Check for different types of errors
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          this.message = error.response.data.message; // Backend error message
+        } else if (error.response && error.response.data) {
+          this.message = "Signup failed. No detailed message available.";
+        } else if (error.response) {
+          this.message = "An unknown error occurred during signup.";
+        } else {
+          // Fallback for network issues or unknown errors
+          this.message = "A network error occurred. Please try again.";
+        }
+
+        // Log the full error object for debugging purposes
+        console.error("Signup error:", error);
       }
     },
     validateFirstName() {

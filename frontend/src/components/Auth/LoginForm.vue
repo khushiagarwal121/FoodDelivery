@@ -65,15 +65,31 @@ export default {
     async handleLogin() {
       try {
         // Directly call the login method without assigning the response to a variable
+        const response = await AuthService.login(
+          this.user.email,
+          this.user.password
+        );
 
-        await AuthService.login(this.user.email, this.user.password);
+        console.log("response  ", response);
+
+        // await AuthService.login(this.user.email, this.user.password);
 
         // If login is successful, proceed with redirection
         this.message = "Login successful! Redirecting...";
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
-        this.message =
-          error.response.message || "Login failed. Please try again.";
+        // Check if error.response exists, and handle different types of errors
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          this.message = error.response.data.message; // Backend message
+        } else {
+          // Fallback message for network errors or unknown issues
+          this.message = "Login failed. Please try again.";
+        }
+        console.error("Login error:", error); // Log for debugging
       }
     },
     validateEmail() {
