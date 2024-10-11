@@ -4,7 +4,7 @@ const {
   signup,
   forgotPassword,
   resetPassword,
-  logout,
+  // logout,
   checkAuth,
 } = require("./controller");
 // require("dotenv").config();
@@ -24,7 +24,7 @@ module.exports = (pool) => {
     res.status(200).json({ message: "Successfully logged out" });
   });
 
-  // adding check-auth route for ckkoies
+  // adding check-auth route for cookies
   router.get("/check-auth", (req, res) => checkAuth(req, res));
   // router.get("/api/auth/check-auth", (req, res) => {
   //   const token = req.cookies["yourCookieName"]; // Replace with your cookie name

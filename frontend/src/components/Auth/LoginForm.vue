@@ -73,7 +73,7 @@ export default {
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
         this.message =
-          error.response.data.message || "Login failed. Please try again.";
+          error.response.message || "Login failed. Please try again.";
       }
     },
     validateEmail() {
