@@ -4,6 +4,7 @@ const cors = require("cors");
 const { Pool } = require("pg"); // Import PostgreSQL client
 const authRoutes = require("./features/auth/api");
 const cookieParser = require("cookie-parser");
+// const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -41,6 +42,9 @@ pool
 
 // Routes
 app.use("/api/auth", authRoutes(pool)); // Pass pool to routes
+
+// Global error handler
+// app.use(errorHandler); // Add the error handler middleware
 
 // Start server
 app.listen(PORT, () => {
