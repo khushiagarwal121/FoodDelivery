@@ -8,8 +8,9 @@ const {
   checkAuth,
 } = require("./controller");
 // require("dotenv").config();
-
+const fs = require("fs");
 const router = express.Router();
+const path = require("path");
 
 module.exports = (pool) => {
   router.post("/login", (req, res) => login(req, res, pool));
@@ -26,21 +27,20 @@ module.exports = (pool) => {
 
   // adding check-auth route for cookies
   router.get("/check-auth", (req, res) => checkAuth(req, res));
-  // router.get("/api/auth/check-auth", (req, res) => {
-  //   const token = req.cookies["yourCookieName"]; // Replace with your cookie name
-
-  //   if (!token) {
-  //     return res.status(401).json({ message: "No token provided" });
-  //   }
-
-  //   try {
-  //     // Replace 'yourSecretKey' with your actual JWT secret
-  //     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  //     res.status(200).json({ message: "Authenticated", user: decoded });
-  //   } catch (err) {
-  //     res.status(401).json({ message: "Invalid token" });
-  //   }
-  // });
+  // Endpoint to get the public key
+  router.get("/public-key", (req, res) => {
+    try {
+      const publicKey = fs.readFileSync(
+        path.join(__dirname, "../../config/keys/public_key.pem"),
+        "utf8"
+      );
+      console.log("fetched public key", publicKey);
+      res.json({ publicKey });
+    } catch (error) {
+      console.error("Error reading public key:", error);
+      res.status(500).json({ message: "Could not retrieve public key" });
+    }
+  });
 
   return router;
 };

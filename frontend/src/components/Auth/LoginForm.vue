@@ -11,9 +11,9 @@
           :class="{ 'input-error': errors.email }"
           required
         />
-        <span v-if="errors.email" class="error-message"
-          ><i>{{ errors.email }}</i></span
-        >
+        <span v-if="errors.email" class="error-message">
+          <i>{{ errors.email }}</i>
+        </span>
       </div>
       <div class="input-group">
         <label for="password">Password:</label>
@@ -25,9 +25,9 @@
           :class="{ 'input-error': errors.password }"
           required
         />
-        <span v-if="errors.password" class="error-message"
-          ><i>{{ errors.password }}</i></span
-        >
+        <span v-if="errors.password" class="error-message">
+          <i>{{ errors.password }}</i>
+        </span>
       </div>
       <button type="submit" :disabled="!isFormValid">Login</button>
     </form>
@@ -36,7 +36,9 @@
 </template>
 
 <script>
+import JSEncrypt from "jsencrypt"; // Adjust according to your actual import
 import AuthService from "../../services/AuthService";
+
 export default {
   data() {
     return {
@@ -49,7 +51,18 @@ export default {
         email: null,
         password: null,
       },
+      publicKey: null, // To store the fetched public key
     };
+  },
+  async created() {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/public-key");
+      const data = await response.json();
+      this.publicKey = data.publicKey;
+      console.log("Fetched Public Key:", this.publicKey);
+    } catch (error) {
+      console.error("Error fetching public key:", error);
+    }
   },
   computed: {
     isFormValid() {
@@ -63,22 +76,29 @@ export default {
   },
   methods: {
     async handleLogin() {
+      if (this.isFormInvalid) {
+        this.message = "Please correct the form errors before submitting.";
+        return;
+      }
+
       try {
-        // Directly call the login method without assigning the response to a variable
+        // Encrypt the password using the fetched public key
+        const encryptor = new JSEncrypt();
+        encryptor.setPublicKey(this.publicKey);
+        const encryptedPassword = encryptor.encrypt(this.user.password);
+
+        // Send the login request
         const response = await AuthService.login(
           this.user.email,
-          this.user.password
+          encryptedPassword
         );
 
         console.log("response  ", response);
-
-        // await AuthService.login(this.user.email, this.user.password);
 
         // If login is successful, proceed with redirection
         this.message = "Login successful! Redirecting...";
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
-        // Check if error.response exists, and handle different types of errors
         if (
           error.response &&
           error.response.data &&
@@ -86,7 +106,6 @@ export default {
         ) {
           this.message = error.response.data.message; // Backend message
         } else {
-          // Fallback message for network errors or unknown issues
           this.message = "Login failed. Please try again.";
         }
         console.error("Login error:", error); // Log for debugging

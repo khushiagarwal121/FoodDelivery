@@ -112,6 +112,7 @@
 </template>
 
 <script>
+import JSEncrypt from "jsencrypt";
 import AuthService from "@/services/AuthService";
 
 export default {
@@ -121,7 +122,7 @@ export default {
         first_name: "",
         last_name: "",
         email: "",
-        password: "",
+        // password: "", // sensitive data to encrypt
         country_code: "",
         phone_number: "",
         dob: "",
@@ -136,7 +137,18 @@ export default {
         phone_number: null,
         dob: null,
       },
+      publicKey: null, // To store the fetched public key
     };
+  },
+  async created() {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/public-key");
+      const data = await response.json();
+      this.publicKey = data.publicKey;
+      console.log("Fetched Public Key:", this.publicKey);
+    } catch (error) {
+      console.error("Error fetching public key:", error);
+    }
   },
   computed: {
     isFormInvalid() {
@@ -152,9 +164,19 @@ export default {
         this.message = "Please correct the form errors before submitting.";
         return;
       }
+      // Encrypt the password
+      const encryptor = new JSEncrypt();
+      encryptor.setPublicKey(this.publicKey);
+      const encryptedPassword = encryptor.encrypt(this.user.password);
 
+      // Prepare the payload
+      const signupData = {
+        ...this.user,
+        password: encryptedPassword, // use the encrypted password
+      };
+      console.log("signup data ", signupData);
       try {
-        const response = await AuthService.signup(this.user);
+        const response = await AuthService.signup(signupData);
         console.log("response:", response);
 
         // Assuming the backend sends a success message in response.data.message

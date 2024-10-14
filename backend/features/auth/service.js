@@ -9,13 +9,42 @@ const {
   findUserByEmailOrPhone,
 } = require("./repository");
 require("dotenv").config();
+const fs = require("fs");
+const JSEncrypt = require("node-jsencrypt");
+const path = require("path");
 
-exports.loginUser = async (email, password) => {
+const privateKeyPath = path.join(
+  __dirname,
+  "../../config/keys/private_key.pem"
+);
+const privateKey = fs.readFileSync(privateKeyPath, "utf8");
+
+function decryptPassword(encryptedPassword) {
+  if (!encryptedPassword || typeof encryptedPassword !== "string") {
+    throw new Error("Invalid encrypted password");
+  }
+
+  const encryptor = new JSEncrypt();
+  encryptor.setPrivateKey(privateKey);
+
+  const decrypted = encryptor.decrypt(encryptedPassword);
+  if (!decrypted) {
+    throw new Error("Failed to decrypt password");
+  }
+
+  return decrypted;
+}
+
+exports.loginUser = async (email, encryptedPassword) => {
+  console.log("Encrypted Password:", encryptedPassword); // Log encrypted password
   const user = await findUserByEmail(email); // No need to pass pool
 
   if (!user) {
     throw new Error("Invalid email or password");
   }
+
+  // Decrypt the password from the frontend
+  const password = decryptPassword(encryptedPassword);
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -44,9 +73,13 @@ exports.signupUser = async (userData) => {
     throw new Error("User already exists with that email or phone number");
   }
 
-  const hashedPassword = await bcrypt.hash(userData.password, 10);
+  // Decrypt the password from the frontend
+  const decryptedPassword = decryptPassword(userData.password);
 
-  await createUser({ ...userData, hashedPassword }); // No need to pass pool
+  // Hash the decrypted password
+  const hashedPassword = await bcrypt.hash(decryptedPassword, 10);
+
+  await createUser({ ...userData, hashedPassword }); // Corrected to use 'password' instead of 'hashedPassword'
 };
 
 exports.sendResetPasswordLink = async (email) => {
@@ -74,7 +107,7 @@ exports.sendResetPasswordLink = async (email) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Password Reset",
-    text: `You requested a password reset. Please use the following link to reset your password:${process.env.FRONTEND_URL}/reset-password?token=${token}`,
+    text: `You requested a password reset. Please use the following link to reset your password: ${process.env.FRONTEND_URL}/reset-password?token=${token}`,
   };
 
   await transporter.sendMail(mailOptions);

@@ -10,9 +10,10 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // Your frontend URL
+    origin: "http://localhost:8080", // Your frontend URL
     credentials: true,
-    methods: ["GET", "POST"],
+    // methods: ["GET", "POST"],
+    optionsSuccessStatus: 200,
   })
 );
 
