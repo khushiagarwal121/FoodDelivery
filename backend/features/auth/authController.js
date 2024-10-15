@@ -5,7 +5,7 @@ const {
   sendResetPasswordLink,
   resetUserPassword,
   verifyToken,
-} = require("./service");
+} = require("./authService");
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;

@@ -7,7 +7,7 @@ const {
   updateUserPassword,
   findUserByUUID,
   findUserByEmailOrPhone,
-} = require("./repository");
+} = require("./authRepository");
 require("dotenv").config();
 const fs = require("fs");
 const JSEncrypt = require("node-jsencrypt");

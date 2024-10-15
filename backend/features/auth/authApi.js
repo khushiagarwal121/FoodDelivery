@@ -6,7 +6,7 @@ const {
   resetPassword,
   // logout,
   checkAuth,
-} = require("./controller");
+} = require("./authController");
 // require("dotenv").config();
 const fs = require("fs");
 const router = express.Router();

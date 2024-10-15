@@ -63,6 +63,7 @@ exports.findUserByEmailOrPhone = async (email, phone_number) => {
 
   return await User.findOne({
     where: {
+      //or condition
       [Sequelize.Op.or]: [
         email ? { email } : {}, // Only include email condition if provided
         phone_number ? { phone_number } : {}, // Only include phone_number condition if provided

@@ -2,10 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 // import store from '../store/store';
 import Login from "../views/Auth/AuthLogin.vue";
 import Signup from "../views/Auth/AuthSignup.vue";
-import ForgotPassword from "../views/Auth/ForgotPassword.vue";
+import ForgotPassword from "../views/Auth/AuthForgotPassword.vue";
 import Dashboard from "../views/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
-import ResetPassword from "../views/Auth/ResetPassword.vue";
+import ResetPassword from "../views/Auth/AuthResetPassword.vue";
 import axios from "axios";
 // import Cookies from "js-cookie";
 

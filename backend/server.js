@@ -2,7 +2,7 @@ require("dotenv").config(); // Load environment variables
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg"); // Import PostgreSQL client
-const authRoutes = require("./features/auth/api");
+const authRoutes = require("./features/auth/authApi");
 const cookieParser = require("cookie-parser");
 // const errorHandler = require("./middleware/errorHandler");
 

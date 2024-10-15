@@ -101,28 +101,16 @@ export default {
 
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
-        // if (
-        //   error.response &&
-        //   error.response.data &&
-        //   error.response.data.message
-        // ) {
-        // this.showErrorToast("Invalid email or password. Please try again.");
-        // toast.error("Invalid email or password. Please try again.");
-        // this.message = error; // Backend message
-        // } else {
-        //   this.message = "Login failed. Please try again.";
-        // }
-        // console.error("Login error:", error); // Log for debugging
         errorToast(error);
       }
     },
-    // showErrorToast(message) {
-    //   const toast = useToast(); // Initialize the toast
-    //   toast.error(message); // Show error toast
-    // },
+
     validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!this.user.email) {
-        this.errors.email = "Email is required!";
+        this.errors.email = "Email is required.";
+      } else if (!emailPattern.test(this.user.email)) {
+        this.errors.email = "Invalid email format.";
       } else {
         this.errors.email = null;
       }
