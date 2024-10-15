@@ -11,19 +11,24 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const token = await loginUser(email, password); // Assuming this returns a valid token
+    const user = await loginUser(email, password); // Ensure this returns the user object, not just a token
+    const accessToken = generateAccessToken(user); // Generate access token
+    const refreshToken = generateRefreshToken(user); // Generate refresh token
     console.log("Generated token:", token);
 
-    // Set the token in a cookie for HTTP
-    res.cookie("authToken", token, {
+    // Set the refresh token in a cookie for HTTP
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-      secure: false, // Must be false for HTTP (only true for HTTPS)
+      secure: process.env.NODE_ENV === "production", // Set to true for HTTPS
       sameSite: "strict", // Helps protect against CSRF attacks
-      maxAge: 3600000, // Cookie expiration time (1 hour)
+      maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expiration time (7 days)
     });
     console.log("Response headers before sending:", res.getHeaders());
 
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({
+      message: "Login successful",
+      accessToken, // Send access token in response
+    });
   } catch (error) {
     console.error("Login error:", error);
     res.status(401).json({ message: error.message });
@@ -82,26 +87,57 @@ exports.resetPassword = async (req, res) => {
 //   }
 // };
 
-exports.checkAuth = (req, res) => {
+exports.checkAuth = async (req, res) => {
   console.log("req.cookies", req.cookies);
-  // get token
-  const token = req.cookies["authToken"];
 
-  if (!token) {
-    return res.status(401).json({ message: "no token provided" });
+  const accessToken = req.cookies["authToken"];
+  const refreshToken = req.cookies["refreshToken"];
+
+  // Check for access token
+  if (!accessToken) {
+    return res.status(401).json({ message: "No access token provided" });
   }
 
   try {
-    // calling service to verify token
-    const userData = verifyToken(token);
+    // Verify the access token
+    const userData = verifyAccessToken(accessToken);
     return res.status(200).json({ message: "Authenticated", user: userData });
   } catch (err) {
-    return (
-      res
+    console.log("Access token verification failed:", err.message);
 
-        .status(500)
-        // .json({ message: error.message }) // `error` is not defined
-        .json({ message: "Invalid token", error: error.message })
-    );
+    // Access token is invalid or expired, check refresh token
+    if (!refreshToken) {
+      return res.status(401).json({ message: "No refresh token provided" });
+    }
+
+    try {
+      // Verify the refresh token
+      const refreshData = verifyRefreshToken(refreshToken);
+      const user = await findUserByUUID(refreshData.uuid); // Retrieve user data using UUID from refresh token
+
+      if (!user) {
+        return res.status(401).json({ message: "Invalid refresh token" });
+      }
+
+      // Generate a new access token
+      const newAccessToken = generateAccessToken(user);
+
+      // Optionally set the new access token in the cookies
+      res.cookie("authToken", newAccessToken, {
+        httpOnly: true,
+        secure: false, // Should be true in production
+        sameSite: "strict",
+        maxAge: 3600000, // 1 hour
+      });
+
+      return res.status(200).json({
+        message: "Access token refreshed",
+        user: { uuid: user.uuid, email: user.email },
+        newAccessToken, // Return the new access token if desired
+      });
+    } catch (refreshError) {
+      console.error("Refresh token verification failed:", refreshError.message);
+      return res.status(401).json({ message: "Invalid refresh token" });
+    }
   }
 };

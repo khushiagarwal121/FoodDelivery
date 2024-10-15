@@ -12,10 +12,13 @@ require("dotenv").config();
 const fs = require("fs");
 const JSEncrypt = require("node-jsencrypt");
 const path = require("path");
-
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../../utils/tokenUtils");
 const privateKeyPath = path.join(
   __dirname,
-  "../../config/keys/private_key.pem"
+  "../../config/keys/private_key.pem",
 );
 const privateKey = fs.readFileSync(privateKeyPath, "utf8");
 
@@ -52,21 +55,17 @@ exports.loginUser = async (email, encryptedPassword) => {
     throw new Error("Invalid email or password");
   }
 
-  const token = jwt.sign(
-    { uuid: user.uuid, email: user.email },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1h",
-    }
-  );
+  // Generate tokens
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
-  return token;
+  return { accessToken, refreshToken };
 };
 
 exports.signupUser = async (userData) => {
   const existingUser = await findUserByEmailOrPhone(
     userData.email,
-    userData.phone_number
+    userData.phone_number,
   );
 
   if (existingUser) {
@@ -92,7 +91,7 @@ exports.sendResetPasswordLink = async (email) => {
   const token = jwt.sign(
     { uuid: user.uuid, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: "15m" }
+    { expiresIn: "15m" },
   );
 
   const transporter = nodemailer.createTransport({

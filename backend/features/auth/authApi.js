@@ -20,8 +20,8 @@ module.exports = (pool) => {
   // router.post("/logout", (req, res) => logout(req, res));
   router.post("/logout", (req, res) => {
     // Clear the authentication cookie
-    res.clearCookie("authToken"); // Replace 'accessToken' with your actual cookie name
-    // res.clearCookie('refreshToken'); // If using refresh token cookies
+    res.clearCookie("accessToken", { httpOnly: true, secure: true }); // Add 'secure: true' if using HTTPS
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     res.status(200).json({ message: "Successfully logged out" });
   });
 
@@ -32,7 +32,7 @@ module.exports = (pool) => {
     try {
       const publicKey = fs.readFileSync(
         path.join(__dirname, "../../config/keys/public_key.pem"),
-        "utf8"
+        "utf8",
       );
       console.log("fetched public key", publicKey);
       res.json({ publicKey });
