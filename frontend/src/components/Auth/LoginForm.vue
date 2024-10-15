@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 import JSEncrypt from "jsencrypt"; // Adjust according to your actual import
 import AuthService from "../../services/AuthService";
 
@@ -74,6 +76,7 @@ export default {
       );
     },
   },
+
   methods: {
     async handleLogin() {
       if (this.isFormInvalid) {
@@ -97,6 +100,12 @@ export default {
 
         // If login is successful, proceed with redirection
         this.message = "Login successful! Redirecting...";
+        toast(this.message, {
+          theme: "auto",
+          type: "success",
+          position: "top-right",
+          dangerouslyHTMLString: true,
+        });
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
         // if (
@@ -104,13 +113,25 @@ export default {
         //   error.response.data &&
         //   error.response.data.message
         // ) {
-        this.message = error; // Backend message
+        // this.showErrorToast("Invalid email or password. Please try again.");
+        // toast.error("Invalid email or password. Please try again.");
+        toast(error, {
+          theme: "auto",
+          type: "error",
+          position: "top-center",
+          dangerouslyHTMLString: true,
+        });
+        // this.message = error; // Backend message
         // } else {
         //   this.message = "Login failed. Please try again.";
         // }
         // console.error("Login error:", error); // Log for debugging
       }
     },
+    // showErrorToast(message) {
+    //   const toast = useToast(); // Initialize the toast
+    //   toast.error(message); // Show error toast
+    // },
     validateEmail() {
       if (!this.user.email) {
         this.errors.email = "Email is required!";
