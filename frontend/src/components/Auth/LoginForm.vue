@@ -93,22 +93,22 @@ export default {
           encryptedPassword
         );
 
-        console.log("response  ", response);
+        console.log("Login response: ", response);
 
         // If login is successful, proceed with redirection
         this.message = "Login successful! Redirecting...";
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          this.message = error.response.data.message; // Backend message
-        } else {
-          this.message = "Login failed. Please try again.";
-        }
-        console.error("Login error:", error); // Log for debugging
+        // if (
+        //   error.response &&
+        //   error.response.data &&
+        //   error.response.data.message
+        // ) {
+        this.message = error; // Backend message
+        // } else {
+        //   this.message = "Login failed. Please try again.";
+        // }
+        // console.error("Login error:", error); // Log for debugging
       }
     },
     validateEmail() {

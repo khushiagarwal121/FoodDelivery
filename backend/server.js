@@ -14,6 +14,7 @@ app.use(
     origin: "http://localhost:8080", // Your frontend URL
     credentials: true,
     // methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     optionsSuccessStatus: 200,
   })
 );
@@ -35,10 +36,9 @@ const pool = new Pool({
 });
 
 // Test PostgreSQL connection
-pool
-  .connect()
-  .then(() => console.log("PostgreSQL connected"))
-  .catch((err) => console.log("Database connection error:", err));
+pool.connect().then(() => console.log("PostgreSQL connected"));
+
+app.options("*", cors()); // Enable pre-flight across-the-board
 
 // Routes
 app.use("/api/auth", authRoutes(pool)); // Pass pool to routes
