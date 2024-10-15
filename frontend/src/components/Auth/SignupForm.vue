@@ -113,6 +113,7 @@
 
 <script>
 import JSEncrypt from "jsencrypt";
+import { errorToast } from "../../utils/toast.js";
 import AuthService from "@/services/AuthService";
 
 export default {
@@ -122,7 +123,7 @@ export default {
         first_name: "",
         last_name: "",
         email: "",
-        // password: "", // sensitive data to encrypt
+        password: "", // sensitive data to encrypt
         country_code: "",
         phone_number: "",
         dob: "",
@@ -188,20 +189,21 @@ export default {
         this.$router.push("/login");
       } catch (error) {
         // Enhanced error handling: Check for different types of errors
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          this.message = error.response.data.message; // Backend error message
-        } else if (error.response && error.response.data) {
-          this.message = "Signup failed. No detailed message available.";
-        } else if (error.response) {
-          this.message = "An unknown error occurred during signup.";
-        } else {
-          // Fallback for network issues or unknown errors
-          this.message = "A network error occurred. Please try again.";
-        }
+        // if (
+        //   error.response &&
+        //   error.response.data &&
+        //   error.response.data.message
+        // ) {
+        //   this.message = error.response.data.message; // Backend error message
+        // } else if (error.response && error.response.data) {
+        //   this.message = "Signup failed. No detailed message available.";
+        // } else if (error.response) {
+        //   this.message = "An unknown error occurred during signup.";
+        // } else {
+        //   // Fallback for network issues or unknown errors
+        errorToast(error);
+        // this.message = error;
+        // }
 
         // Log the full error object for debugging purposes
         console.error("Signup error:", error);

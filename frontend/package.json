@@ -12,6 +12,7 @@
     "core-js": "^3.8.3",
     "js-cookie": "^3.0.5",
     "jsencrypt": "^3.3.2",
+    "prettier": "^3.3.3",
     "vue": "^3.2.13",
     "vue-router": "^4.4.5",
     "vue3-toastify": "^0.2.3",

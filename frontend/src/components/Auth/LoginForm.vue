@@ -36,11 +36,9 @@
 </template>
 
 <script>
-import { toast } from "vue3-toastify";
-import "vue3-toastify/dist/index.css";
 import JSEncrypt from "jsencrypt"; // Adjust according to your actual import
 import AuthService from "../../services/AuthService";
-
+import { errorToast } from "../../utils/toast.js";
 export default {
   data() {
     return {
@@ -100,12 +98,7 @@ export default {
 
         // If login is successful, proceed with redirection
         this.message = "Login successful! Redirecting...";
-        toast(this.message, {
-          theme: "auto",
-          type: "success",
-          position: "top-right",
-          dangerouslyHTMLString: true,
-        });
+
         this.$router.push("/"); // Redirect to homepage or dashboard
       } catch (error) {
         // if (
@@ -115,17 +108,12 @@ export default {
         // ) {
         // this.showErrorToast("Invalid email or password. Please try again.");
         // toast.error("Invalid email or password. Please try again.");
-        toast(error, {
-          theme: "auto",
-          type: "error",
-          position: "top-center",
-          dangerouslyHTMLString: true,
-        });
         // this.message = error; // Backend message
         // } else {
         //   this.message = "Login failed. Please try again.";
         // }
         // console.error("Login error:", error); // Log for debugging
+        errorToast(error);
       }
     },
     // showErrorToast(message) {
